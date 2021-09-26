@@ -116,45 +116,51 @@ extension LinearGradient {
 }
 
 struct SimpleButtonStyle: ButtonStyle {
+    
+    let opPressed: Bool
+    let pPressed: Bool
+    let sPressed: Bool
+    let mPressed: Bool
+    let dPressed: Bool
+    
     func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .contentShape(Circle())
-            .background(
-                Group{
-                    if configuration.isPressed{
+        
+            configuration.label
+                .contentShape(Circle())
+                .background(
+                    Group{
+                        if configuration.isPressed{
+                            Circle()
+                                .fill(Color.offWhite)
+                                .overlay(
+                                    Circle()
+                                        .stroke(Color.gray , lineWidth: 4)
+                                        .blur(radius: 4)
+                                        .offset(x: 2, y: 2)
+                                        .mask(
+                                            Circle()
+                                                .fill(LinearGradient(Color.black, Color.clear))
+                                        )
+                                )
+                                .overlay(
+                                    Circle()
+                                        .stroke(Color.white, lineWidth: 8)
+                                        .blur(radius: 4)
+                                        .offset(x: -2, y: -2)
+                                        .mask(
+                                            Circle()
+                                                .fill(LinearGradient(Color.clear, Color.black))
+                                        )
+                                )
+                        }else{
                         Circle()
                             .fill(Color.offWhite)
-                            .overlay(
-                                Circle()
-                                    .stroke(Color.gray , lineWidth: 4)
-                                    .blur(radius: 4)
-                                    .offset(x: 2, y: 2)
-                                    .mask(
-                                        Circle()
-                                            .fill(LinearGradient(Color.black, Color.clear))
-                                    )
-                            )
-                            .overlay(
-                                Circle()
-                                    .stroke(Color.white, lineWidth: 8)
-                                    .blur(radius: 4)
-                                    .offset(x: -2, y: -2)
-                                    .mask(
-                                        Circle()
-                                            .fill(LinearGradient(Color.clear, Color.black))
-                                    )
-                            )
-                    }else{
-                    Circle()
-    //                    .padding(30)
-                        .fill(Color.offWhite)
-                        .shadow(color: Color.black.opacity(0.2), radius: 10, x: 10, y: 10)
-                        .shadow(color: Color.white.opacity(0.7), radius: 10, x: -5, y: -5)
+                            .shadow(color: Color.black.opacity(0.2), radius: 10, x: 10, y: 10)
+                            .shadow(color: Color.white.opacity(0.7), radius: 10, x: -5, y: -5)
+                        }
                     }
-                }
-                
-            )
-            .animation(nil)
+                )
+                .animation(nil)
     }
 }
 
@@ -173,6 +179,12 @@ struct ContentView: View {
     @State var operationInUse: Bool = false
     @State var decimalPointPresent: Bool = false
     
+    @State var opPressed: Bool = false
+    @State var pPressed: Bool = false
+    @State var sPressed: Bool = false
+    @State var mressed: Bool = false
+    @State var dPressed: Bool = false
+    
     let buttons: [[CalcButton]] = [
         [.clear, .answer, .negative, .divide],
         [.seven, .eight, .nine, .multiply],
@@ -189,10 +201,8 @@ struct ContentView: View {
                 Spacer()
                 // Text Dispaly
                 HStack{
-//                    Spacer()
                     Text(value)
                         .bold()
-//                        .multilineTextAlignment(.leading)
                         .padding()
                         .font(.system(size: 80))
                         .frame(alignment: .leading)
@@ -206,8 +216,6 @@ struct ContentView: View {
                                 .shadow(color: Color.black.opacity(0.2), radius: 10, x: 10, y: 10)
                                 .shadow(color: Color.white.opacity(0.7), radius: 10, x: -5, y: -5)
                         )
-                        
-                        
                 }
                 .padding()
                 Spacer()
@@ -218,38 +226,24 @@ struct ContentView: View {
                             Button(action: {
                                 HapticManager.instance.impact(style: .rigid)
                                 SoundManager.instance.playSound()
-//                                HapticManager.instance.notification(type: .warning)
-//                                HapticManager.instance.notification(type: .error)
                                 self.didTapButton(button: item)
                             }, label: {
-                                
                                 Text(item.rawValue)
                                     .font(.system(size: item.ButtonFontSize))
                                     .frame(
-//                                        width: self.buttonWidth(item: item), height: self.buttonHeight()
                                         width: 80, height: 80
                                     )
-                                    //
-//                                    .background(Color.offWhite)
-                                    //
                                     .foregroundColor(item.ButtonForColor)
                                     .cornerRadius(self.buttonWidth(item: item)/2)
-                                
                             }
                             )
-                            .buttonStyle(SimpleButtonStyle())
+                            .buttonStyle(SimpleButtonStyle(opPressed: opPressed, pPressed: pPressed, sPressed: sPressed, mPressed: mressed, dPressed: dPressed))
                         }
-                        
                     }
                     .padding(.bottom, 5)
-                    
-//                    .hapticFeedbackOnTap(style: .rigid)
-//                    .padding(.leading, 3)
-//                    .padding(.trailing, 2)
                 }
             }
             .padding(.bottom, 10)
-            
         }
     }
     
@@ -264,6 +258,12 @@ struct ContentView: View {
             
             //MARK: - Add Button
             if button == .add{
+                self.opPressed = true
+                self.pPressed = true
+                self.sPressed = false
+                self.mressed = false
+                self.dPressed = false
+
                 if self.oneOperationPresent {
                     if self.operationInUse == false{
                         let newValue = Float(self.value) ?? 0
@@ -287,7 +287,6 @@ struct ContentView: View {
                             self.value = "\(Float(ans))"
                         }
                         self.runningNumber = ans
-//                        self.ansNumber = self.runningNumber
                         self.currentOperation = .add
                         self.firstDigitAfterOperation = true
                         self.oneOperationPresent = false
@@ -305,11 +304,9 @@ struct ContentView: View {
                         self.currentOperation = .add
                         if self.answerAfterEqual{
                             self.runningNumber = Float(self.value) ?? 0
-//                            self.ansNumber = self.runningNumber
                             self.answerAfterEqual = false
                         }else{
                             self.runningNumber = self.newNumber
-//                            self.ansNumber = self.runningNumber
                         }
                         self.firstDigitAfterOperation = true
                         self.oneOperationPresent = true
@@ -325,6 +322,12 @@ struct ContentView: View {
             
             //MARK: - Subtract Button
             else if button == .subtract{
+                self.opPressed = true
+                self.pPressed = false
+                self.sPressed = true
+                self.mressed = false
+                self.dPressed = false
+
                 if self.oneOperationPresent {
                     if self.operationInUse == false{
                         let newValue = Float(self.value) ?? 0
@@ -348,33 +351,30 @@ struct ContentView: View {
                             self.value = "\(Float(ans))"
                         }
                         self.runningNumber = ans
-//                        self.ansNumber = self.runningNumber
-                        self.currentOperation = .subtract // --------
+                        self.currentOperation = .subtract
                         self.firstDigitAfterOperation = true
                         self.oneOperationPresent = false
                         self.operationInUse = true
                     }else{
-                        self.currentOperation = .subtract // --------
+                        self.currentOperation = .subtract
                         self.firstDigitAfterOperation = true
                         self.oneOperationPresent = false
                     }
                     break
                 }else{
                     if self.operationInUse == false{
-                        self.currentOperation = .subtract // -----------
+                        self.currentOperation = .subtract
                         if self.answerAfterEqual{
                             self.runningNumber = Float(self.value) ?? 0
-//                            self.ansNumber = self.runningNumber
                             self.answerAfterEqual = false
                         }else{
                             self.runningNumber = self.newNumber
-//                            self.ansNumber = self.runningNumber
                         }
                         self.firstDigitAfterOperation = true
                         self.oneOperationPresent = true
                         self.operationInUse = true
                     }else{
-                        self.currentOperation = .subtract // --------------
+                        self.currentOperation = .subtract
                         self.firstDigitAfterOperation = true
                         self.oneOperationPresent = true
                     }
@@ -385,6 +385,12 @@ struct ContentView: View {
             
             //MARK: - Multiply Button
             else if button == .multiply{
+                self.opPressed = true
+                self.pPressed = false
+                self.sPressed = false
+                self.mressed = true
+                self.dPressed = false
+
                 if self.oneOperationPresent {
                     if self.operationInUse == false{
                         let newValue = Float(self.value) ?? 0
@@ -408,33 +414,30 @@ struct ContentView: View {
                             self.value = "\(Float(ans))"
                         }
                         self.runningNumber = ans
-//                        self.ansNumber = self.runningNumber
-                        self.currentOperation = .multiply // --------
+                        self.currentOperation = .multiply
                         self.firstDigitAfterOperation = true
                         self.oneOperationPresent = false
                         self.operationInUse = true
                     }else{
-                        self.currentOperation = .multiply // --------
+                        self.currentOperation = .multiply
                         self.firstDigitAfterOperation = true
                         self.oneOperationPresent = false
                     }
                     break
                 }else{
                     if self.operationInUse == false{
-                        self.currentOperation = .multiply // -----------
+                        self.currentOperation = .multiply
                         if self.answerAfterEqual{
                             self.runningNumber = Float(self.value) ?? 0
-//                            self.ansNumber = self.runningNumber
                             self.answerAfterEqual = false
                         }else{
                             self.runningNumber = self.newNumber
-//                            self.ansNumber = self.runningNumber
                         }
                         self.firstDigitAfterOperation = true
                         self.oneOperationPresent = true
                         self.operationInUse = true
                     }else{
-                        self.currentOperation = .multiply // --------------
+                        self.currentOperation = .multiply
                         self.firstDigitAfterOperation = true
                         self.oneOperationPresent = true
                     }
@@ -444,6 +447,12 @@ struct ContentView: View {
             
             //MARK: - Divide Button
             else if button == .divide{
+                self.opPressed = true
+                self.pPressed = false
+                self.sPressed = false
+                self.mressed = false
+                self.dPressed = true
+                
                 if self.oneOperationPresent {
                     if self.operationInUse == false{
                         let newValue = Float(self.value) ?? 0
@@ -467,33 +476,30 @@ struct ContentView: View {
                             self.value = "\(Float(ans))"
                         }
                         self.runningNumber = ans
-//                        self.ansNumber = self.runningNumber
-                        self.currentOperation = .divide // --------
+                        self.currentOperation = .divide
                         self.firstDigitAfterOperation = true
                         self.oneOperationPresent = false
                         self.operationInUse = true
                     }else{
-                        self.currentOperation = .divide // --------
+                        self.currentOperation = .divide
                         self.firstDigitAfterOperation = true
                         self.oneOperationPresent = false
                     }
                     break
                 }else{
                     if self.operationInUse == false{
-                        self.currentOperation = .divide // -----------
+                        self.currentOperation = .divide
                         if self.answerAfterEqual{
                             self.runningNumber = Float(self.value) ?? 0
-//                            self.ansNumber = self.runningNumber
                             self.answerAfterEqual = false
                         }else{
                             self.runningNumber = self.newNumber
-//                            self.ansNumber = self.runningNumber
                         }
                         self.firstDigitAfterOperation = true
                         self.oneOperationPresent = true
                         self.operationInUse = true
                     }else{
-                        self.currentOperation = .divide // --------------
+                        self.currentOperation = .divide
                         self.firstDigitAfterOperation = true
                         self.oneOperationPresent = true
                     }
@@ -504,6 +510,8 @@ struct ContentView: View {
             
             //MARK: - Equal Button
             else if button == .equal{
+                self.opPressed = false
+
                 
                 self.answerAfterEqual = true
                 let currentValue = self.newNumber
@@ -574,9 +582,11 @@ struct ContentView: View {
             self.oneOperationPresent = false
             self.operationInUse = false
             self.decimalPointPresent = false
+            self.opPressed = false
         
         //MARK: - Negative Button
         case .negative:
+            self.opPressed = false
             let numberPresent = Float(self.value) ?? 0
             let numberToShow: Float = -1 * numberPresent
             if floor(numberToShow) == numberToShow{
@@ -588,6 +598,7 @@ struct ContentView: View {
           
         //MARK: - Answer Button
         case .answer:
+            self.opPressed = false
             let previousAns = Float(self.ansNumber)
             if floor(previousAns) == previousAns{
                 self.value = "\(Int(previousAns))"
@@ -603,6 +614,7 @@ struct ContentView: View {
             
         //MARK: - Decimal Button
         case .decimal:
+            self.opPressed = false
             let element: Character = "."
             if self.value.contains(element){
                 break
@@ -613,7 +625,7 @@ struct ContentView: View {
         //MARK: - Numbers Button
         default:
             let number = button.rawValue
-            
+            self.opPressed = false
             if self.currentOperation == .none{
                 
                 if answerAfterEqual{
@@ -648,9 +660,6 @@ struct ContentView: View {
     
     //MARK: - Button Width And Height
     func buttonWidth(item: CalcButton) -> CGFloat{
-//        if item == .zero{
-//            return ((UIScreen.main.bounds.width - (4*12))/4) * 2
-//        }
         return (UIScreen.main.bounds.width - (5*12)) / 4
     }
     
