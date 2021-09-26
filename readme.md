@@ -14,7 +14,7 @@ Created this application to implement the logic behind the basic operations of a
 
 ## Screenshots
 <p float="left">
-<img src="s1.png" width="388" height="490">
-<img src="s2.png" width="388" height="490">
-<img src="s3.png" width="388" height="490">
+<img src="s1.png" width="250" height="395">
+<img src="s2.png" width="250" height="395">
+<img src="s3.png" width="250" height="395">
 </p>
