@@ -13,8 +13,8 @@ Created this application to implement the logic behind the basic operations of a
 </div>
 
 ## Screenshots
-
-<img src="s1.png" width="400" height="790">
-<img src="s2.png" width="400" height="790">
-<img src="s3.png" width="400" height="790">
-
+<p float="left">
+<img src="s1.png" width="200" height="395">
+<img src="s2.png" width="200" height="395">
+<img src="s3.png" width="200" height="395">
+</p>
