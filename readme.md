@@ -2,19 +2,19 @@
 
 
 <p align="center">
-  <img  src="calIcon.jpg">
+  <img  src="calIcon.png">
 </p>
 
 Created this application to implement the logic behind the basic operations of a calculator. The UI is the new Neumorphic Design. The app is written in SwiftUI.
 
 ## Demo
-<video controls loop>
-  <source src="demo.mp4" type="video/mp4">
-</video>
+<div align="center">
+  <a href="https://www.youtube.com/watch?v=Uugl0VJut2w"><img src="https://img.youtube.com/vi/Uugl0VJut2w/0.jpg" alt="IMAGE ALT TEXT"></a>
+</div>
 
 ## Screenshots
 
-![s1]<img src="s1.png" width="400" height="790">
-![s2]<img src="s2.png" width="400" height="790">
-![s3]<img src="s3.png" width="400" height="790">
+<img src="s1.png" width="400" height="790">
+<img src="s2.png" width="400" height="790">
+<img src="s3.png" width="400" height="790">
 
